@@ -15,19 +15,25 @@ http
           chunks.push(chunk)
       })
     req.on("end", function(){
-        const body = JSON.parse(Buffer.concat(chunks).toString())
+        let body
+        try {
+            body = JSON.parse(Buffer.concat(chunks).toString())
+        }catch(err){
+            console.log(err)
+        }
+        if(url == "/"){
+            res.statusCode = 200;
+            res.write("<h1>DON'T PANIC</h1>")
+        }else if(url == "/about"){
+            res.statusCode = 200;
+            res.write("<h1>Mia lives in Portland, OR</h1>")
+        }else if(url == "/echo"){
+            res.statusCode = 200;
+            res.write(JSON.stringify({method, url, body}))
+        }
+        res.end();
     })
-
-    if(url == "/"){
-        res.statusCode = 200;
-        res.write("<h1>DON'T PANIC</h1>")
-    }else if(url == "/about"){
-        res.statusCode = 200;
-        res.write("<h1>Mia lives in Portland, OR</h1>")
-    }else if(url == "/echo"){
-        res.statusCode = 200;
-        res.write({method, url, body})
-    }
-    res.end();
   })
-  .listen(3000)
+  .listen(3000, () =>{
+      console.log("Server listening on port 3000...")
+  })
